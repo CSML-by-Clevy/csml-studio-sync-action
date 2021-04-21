@@ -1,0 +1,5 @@
+name: 'CSML - update bot on dev push'
+description: 'Update your csml studio bot when pushing new flows on dev branch'
+runs:
+  using: 'node12'
+  main: 'index.js'
