@@ -18802,7 +18802,7 @@ function getAuthenticationHeader() {
 
   const flows = await getFlows();
   const airules = await getAirules();
-
+  console.log({ flows, airules, url: `${CSML_CLIENT_URL}/api/bot/flows` });
   const studio_bot_flows = await request.get(`${CSML_CLIENT_URL}/api/bot/flows`)
     .set('X-Api-Key', XApiKey)
     .set('X-Api-Signature', XApiSignature)
