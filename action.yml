@@ -1,22 +1,22 @@
-name: 'CSML - Syncronize your repository with a bot on csml studio'
-description: 'Update your CSML studio bot and it's labels when doing various operation such as pushing on dev or master.'
+name: "CSML - Syncronize your repository with a bot on csml studio"
+description: "Update your CSML studio bot and it's labels when doing various operation such as pushing on dev or master."
 runs:
-  using: 'node12'
-  main: 'index.js'
+  using: "node12"
+  main: "index.js"
 inputs:
   build:
-    description: 'Trigger or not the build of a bot via CSML studio client api'
+    description: "Trigger or not the build of a bot via CSML studio client api"
     required: false
     default: false
   save:
-    description: 'Trigger or not the update of a bot via CSML studio client api'
+    description: "Trigger or not the update of a bot via CSML studio client api"
     required: false
     default: false
   create_label:
-    description: 'Trigger or not the creation of a labeled version of a bot via CSML studio client api'
+    description: "Trigger or not the creation of a labeled version of a bot via CSML studio client api"
     required: false
     default: false
   delete_label:
-    description: 'Trigger or not the deletion of a labeled version of a bot via CSML studio client api'
+    description: "Trigger or not the deletion of a labeled version of a bot via CSML studio client api"
     required: false
     default: false
