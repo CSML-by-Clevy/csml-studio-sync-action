@@ -7,11 +7,9 @@ inputs:
   build:
     description: "Trigger or not the build of a bot via CSML studio client api"
     required: false
-    default: false
   save:
     description: "Trigger or not the update of a bot via CSML studio client api"
     required: false
-    default: false
   create_label:
     description: "Trigger or not the creation of a labeled version of a bot via CSML studio client api"
     required: false
