@@ -1,0 +1,28 @@
+name: Save bot example
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  container-job:
+    runs-on: ubuntu-latest
+
+    container:
+      image:  node:12.4-alpine
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - run: npm ci
+        working-directory: .
+
+      - name: CSML - Syncronize your repository with a bot on csml studio
+        uses: mdarriga/csml-bot-sync-action@v18
+        with:
+          save: true
+        env:
+          CSML_CLIENT_URL: https://md-api-clients.ngrok.io
+          CSML_CLIENT_API_KEY: ${{ secrets.CSML_CLIENT_API_KEY }}
+          CSML_CLIENT_API_SECRET: ${{ secrets.CSML_CLIENT_API_SECRET }}
