@@ -43,11 +43,11 @@ class BotsService {
     const flows = [];
     if (fs.existsSync('flows')) {
       fs.readdirSync('flows')
-      .forEach((fileName) => {
-        if (fileName.endsWith('.csml')) f{
-          flows.push(fs.readFileSync(`flows/${fileName}`).toString());
-        }
-      });
+        .forEach((fileName) => {
+          if (fileName.endsWith('.csml')) {
+            flows.push(fs.readFileSync(`flows/${fileName}`).toString());
+          }
+        });
     }
       if (DEBUG) console.log(flows);
       console.log(`Got ${flows.length} repository flows.`)
@@ -185,7 +185,7 @@ class BotsService {
     const [XApiKey, XApiSignature] = BotsService.setAuthenticationHeader();
 
     console.log(`Creating snapshot ${snapshotName}...`);
-    return request.post(`${CSML_CLIENT_URL}/api/bot/label`)
+    await request.post(`${CSML_CLIENT_URL}/api/bot/label`)
       .set('X-Api-Key', XApiKey)
       .set('X-Api-Signature', XApiSignature)
       .send({ label: snapshotName })
@@ -194,7 +194,7 @@ class BotsService {
         if (DEBUG) console.error(err);
         throw err;
       });
-      console.log(`Successfully created bot snapshot ${snapshotName}.`);
+    console.log(`Successfully created bot snapshot ${snapshotName}.`);
     }
 
   /**
@@ -206,7 +206,7 @@ class BotsService {
     const [XApiKey, XApiSignature] = BotsService.setAuthenticationHeader();
 
     console.log(`Deleting snapshot ${snapshotName}...`);
-    return request.del(`${CSML_CLIENT_URL}/api/bot/label/${snapshotName}`)
+    await request.del(`${CSML_CLIENT_URL}/api/bot/label/${snapshotName}`)
       .set('X-Api-Key', XApiKey)
       .set('X-Api-Signature', XApiSignature)
       .then(res => res.body)
@@ -214,7 +214,7 @@ class BotsService {
         if (DEBUG) console.error(err);
         throw err;
       });
-      console.log(`Successfully deleted bot snapshot ${snapshotName}.`);
+    console.log(`Successfully deleted bot snapshot ${snapshotName}.`);
   }
 }
 

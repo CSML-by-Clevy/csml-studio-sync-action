@@ -18,13 +18,11 @@ const {
     if (INPUT_BUILD) await BotsService.buildBot();
 
     if (INPUT_CREATE_SNAPSHOT) {
-      const payload = github.context.payload;
       const snapshotName = payload.ref.replace('refs/tags/', '');
       await BotsService.createSnapshot(snapshotName);
     }
 
     if (INPUT_DELETE_SNAPSHOT) {
-      const payload = github.context.payload;
       const snapshotName = payload.ref.replace('refs/tags/', '');
       await BotsService.deleteSnapshot(snapshotName);
     }

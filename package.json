@@ -4,5 +4,8 @@
     "@actions/github": "^4.0.0",
     "bluebird": "^3.7.2",
     "superagent": "^6.1.0"
+  },
+  "devDependencies": {
+    "eslint": "^7.28.0"
   }
 }
