@@ -13,7 +13,7 @@ const {
   try {
     const payload = github.context.payload;
 
-    if (INPUT_UPDATE) await BotsService.saveBot();
+    if (INPUT_UPDATE) await BotsService.updateBot();
 
     if (INPUT_BUILD) await BotsService.buildBot();
 
