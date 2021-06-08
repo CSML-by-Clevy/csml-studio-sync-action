@@ -92,28 +92,28 @@ class BotsService {
   static async updateBot() {
     const [XApiKey, XApiSignature] = BotsService.setAuthenticationHeader();
 
-    const flows = await BotsService.getRepoFlows();
+    const localFlows = await BotsService.getRepoFlows();
     const airules = await BotsService.getRepoAirules();
 
     console.log('Getting CSML Studio flows...')
-    const studioBotFlows = await request.get(`${CSML_CLIENT_URL}/api/bot/flows`)
+    const studioFlows = await request.get(`${CSML_CLIENT_URL}/api/bot/flows`)
       .set('X-Api-Key', XApiKey)
       .set('X-Api-Signature', XApiSignature)
       .then(res => res.body);
-    console.log(`Got ${studioBotFlows.length} CSML Studio flows.`)
+    console.log(`Got ${studioFlows.length} CSML Studio flows.`)
 
     const deleteFlows = [];
     const updateFlows = [];
     const createFlows = [];
 
-    studioBotFlows.forEach(studioFlow => {
-      const found = flows.find(f => f.name === studioFlow.name);
+    studioFlows.forEach(studioFlow => {
+      const found = localFlows.find(f => f.name.toLowerCase() === studioFlow.name.toLowerCase());
       if (found) updateFlows.push({ ...studioFlow, ...found });
       else deleteFlows.push(studioFlow);
     });
 
-    flows.forEach(f => {
-      const found = studioBotFlows.find(sf => sf.name === f.name);
+    localFlows.forEach(f => {
+      const found = studioFlows.find(sf => sf.name.toLowerCase() === f.name.toLowerCase());
       if (!found) createFlows.push(f);
     })
 
