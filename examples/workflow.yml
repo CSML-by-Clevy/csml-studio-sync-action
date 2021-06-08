@@ -15,7 +15,7 @@ jobs:
       - name: Sync with studio
         uses: CSML-by-Clevy/csml-studio-sync-action
         with:
-          push: true
+          update: true
           build: true
         env:
           CSML_CLIENT_API_KEY: ${{ secrets.CSML_CLIENT_API_KEY }}

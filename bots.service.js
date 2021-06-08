@@ -17,8 +17,14 @@ class BotsService {
    * @returns array
    */
   static async getRepoAirules() {
-    if (fs.existsSync('airules')) return JSON.parse(fs.readFileSync('airules/airules.json'));
-    return [];
+    try {
+      if (fs.existsSync('airules.json')) return JSON.parse(fs.readFileSync('airules.json'));
+      return [];
+    }
+    catch (err) {
+      console.warn("Invalid airules.json file.")
+      return []
+    }
   }
 
   /**
@@ -28,9 +34,11 @@ class BotsService {
    */
   static async getRepoFlows() {
     if (fs.existsSync('flows')) {
-      return fs.readdirSync('flows').map(fileName => {
-        return JSON.parse(fs.readFileSync(`flows/${fileName}`));
-      })
+      return fs.readdirSync('flows')
+        .reduce((acc, fileName) => {
+          if (fileName.endsWith('.csml')) acc.push(fs.readFileSync(`flows/${fileName}`).toString());
+          return acc;
+        }, []);
     }
     return [];
   }
@@ -65,7 +73,7 @@ class BotsService {
   /**
    * Sync the flows and airule from the repository to the csml studio.
    */
-  static async saveBot() {
+  static async updateBot() {
     const [XApiKey, XApiSignature] = BotsService.setAuthenticationHeader();
 
     const flows = await BotsService.getRepoFlows();
