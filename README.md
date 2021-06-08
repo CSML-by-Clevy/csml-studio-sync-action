@@ -1,14 +1,14 @@
 # CSML Studio Sync
 
-This action lets you synchronize your chatbot from your github respository to your CSML Studio account.
+This action lets you synchronize your [CSML Studio](https://studio.csml.dev) chatbot from your github respository with you CSML Studio account.
 
 ## Usage
 
-See [example](./examples/workflow.yml)
+See [example](./examples/workflow.yml).
 
 ```yml
 steps:
-  - uses: CSML-by-Clevy/csml-studio-sync-action
+  - uses: CSML-by-Clevy/csml-studio-sync-action@v1
     with:
       update: true
       build: true
