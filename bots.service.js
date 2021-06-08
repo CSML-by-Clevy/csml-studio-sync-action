@@ -7,6 +7,7 @@ const {
   CSML_CLIENT_API_KEY,
   CSML_CLIENT_API_SECRET,
   CSML_CLIENT_URL = 'https://clients.csml.dev/v1',
+  DEBUG,
 } = process.env;
 
 class BotsService {
@@ -18,8 +19,13 @@ class BotsService {
    */
   static async getRepoAirules() {
     try {
-      if (fs.existsSync('airules.json')) return JSON.parse(fs.readFileSync('airules.json'));
-      return [];
+      console.log('Getting airules.json...')
+      let airules = (fs.existsSync('airules.json'))
+        ? JSON.parse(fs.readFileSync('airules.json'))
+        : [];
+      if (DEBUG) console.log({ airules });
+      console.log(`Got ${airules.length} airules.`)
+      return airules;
     }
     catch (err) {
       console.warn("Invalid airules.json file.")
@@ -33,14 +39,19 @@ class BotsService {
    * @returns array
    */
   static async getRepoFlows() {
+    console.log('Getting repository flows...')
+    const flows = [];
     if (fs.existsSync('flows')) {
-      return fs.readdirSync('flows')
-        .reduce((acc, fileName) => {
-          if (fileName.endsWith('.csml')) acc.push(fs.readFileSync(`flows/${fileName}`).toString());
-          return acc;
-        }, []);
+      fs.readdirSync('flows')
+      .forEach((fileName) => {
+        if (fileName.endsWith('.csml')) f{
+          flows.push(fs.readFileSync(`flows/${fileName}`).toString());
+        }
+      });
     }
-    return [];
+      if (DEBUG) console.log(flows);
+      console.log(`Got ${flows.length} repository flows.`)
+    return flows;
   }
 
   /**
@@ -67,7 +78,12 @@ class BotsService {
     await request.post(`${CSML_CLIENT_URL}/api/bot/build`)
       .set('X-Api-Key', XApiKey)
       .set('X-Api-Signature', XApiSignature)
-      .send();
+      .send()
+      .catch(err => {
+        if (DEBUG) console.error(err);
+        throw err;
+      });
+    console.log('Successfully built bot');
   }
 
   /**
@@ -79,10 +95,12 @@ class BotsService {
     const flows = await BotsService.getRepoFlows();
     const airules = await BotsService.getRepoAirules();
 
+    console.log('Getting CSML Studio flows...')
     const studioBotFlows = await request.get(`${CSML_CLIENT_URL}/api/bot/flows`)
       .set('X-Api-Key', XApiKey)
       .set('X-Api-Signature', XApiSignature)
       .then(res => res.body);
+    console.log(`Got ${studioBotFlows.length} CSML Studio flows.`)
 
     const deleteFlows = [];
     const updateFlows = [];
@@ -99,38 +117,62 @@ class BotsService {
       if (!found) createFlows.push(f);
     })
 
+    console.log(`Deleting ${deleteFlows.length} removed flows...`)
     if (deleteFlows.length) {
       await Promise.each(deleteFlows, async df => {
         await request.del(`${CSML_CLIENT_URL}/api/bot/flows/${df.id}`)
-          .set('X-Api-Key', XApiKey)
-          .set('X-Api-Signature', XApiSignature)
-          .send(df);
+        .set('X-Api-Key', XApiKey)
+        .set('X-Api-Signature', XApiSignature)
+        .send(df)
+        .catch(err => {
+          if (DEBUG) console.error(df, err);
+          throw err;
+        });
       });
+      console.log('Deleted flows.');
     }
 
+    console.log(`Updating ${updateFlows.length} flows...`)
     if (updateFlows.length) {
       await Promise.each(updateFlows, async uf => {
         await request.put(`${CSML_CLIENT_URL}/api/bot/flows/${uf.id}`)
-          .set('X-Api-Key', XApiKey)
-          .set('X-Api-Signature', XApiSignature)
-          .send(uf);
+        .set('X-Api-Key', XApiKey)
+        .set('X-Api-Signature', XApiSignature)
+        .send(uf)
+        .catch(err => {
+          if (DEBUG) console.error(uf, err);
+          throw err;
+        });
       });
+      console.log('Updated flows.');
     }
 
+    console.log(`Creating ${createFlows.length} new flows...`)
     if (createFlows.length) {
       await Promise.each(createFlows, async cf => {
         await request.post(`${CSML_CLIENT_URL}/api/bot/flows`)
           .set('X-Api-Key', XApiKey)
           .set('X-Api-Signature', XApiSignature)
-          .send(cf);
+          .send(cf)
+          .catch(err => {
+            if (DEBUG) console.error(cf, err);
+            throw err;
+          });
       });
+      console.log('Created flows.');
     }
 
     if (airules) {
+      console.log('Updating airules...')
       await request.put(`${CSML_CLIENT_URL}/api/bot`)
         .set('X-Api-Key', XApiKey)
         .set('X-Api-Signature', XApiSignature)
-        .send({ airules });
+        .send({ airules })
+        .catch(err => {
+          if (DEBUG) console.error({ airules }, err);
+          throw err;
+        });
+      console.log('Updated airules.')
     }
   }
 
@@ -142,12 +184,18 @@ class BotsService {
   static async createSnapshot(snapshotName) {
     const [XApiKey, XApiSignature] = BotsService.setAuthenticationHeader();
 
+    console.log(`Creating snapshot ${snapshotName}...`);
     return request.post(`${CSML_CLIENT_URL}/api/bot/label`)
       .set('X-Api-Key', XApiKey)
       .set('X-Api-Signature', XApiSignature)
       .send({ label: snapshotName })
-      .then(res => res.body);
-  }
+      .then(res => res.body)
+      .catch(err => {
+        if (DEBUG) console.error(err);
+        throw err;
+      });
+      console.log(`Successfully created bot snapshot ${snapshotName}.`);
+    }
 
   /**
    * Delete an existing snapshot
@@ -157,10 +205,16 @@ class BotsService {
   static async deleteSnapshot(snapshotName) {
     const [XApiKey, XApiSignature] = BotsService.setAuthenticationHeader();
 
+    console.log(`Deleting snapshot ${snapshotName}...`);
     return request.del(`${CSML_CLIENT_URL}/api/bot/label/${snapshotName}`)
       .set('X-Api-Key', XApiKey)
       .set('X-Api-Signature', XApiSignature)
-      .then(res => res.body);
+      .then(res => res.body)
+      .catch(err => {
+        if (DEBUG) console.error(err);
+        throw err;
+      });
+      console.log(`Successfully deleted bot snapshot ${snapshotName}.`);
   }
 }
 
