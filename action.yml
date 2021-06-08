@@ -1,18 +1,19 @@
-name: "CSML - Syncronize your repository with a bot on csml studio"
-description: "Update your CSML studio bot and it's labels when doing various operation such as pushing on dev or master."
+name: "CSML Studio Sync"
+description: "Easily synchronize and version your CSML Studio Chatbot from a Github repository."
+author: "Clevy.io"
+inputs:
+  update:
+    description: "Update the bot on CSML Studio with the contents of repo"
+    required: false
+  build:
+    description: "Create a new build with the saved content on CSML Studio"
+    required: false
+  create-snapshot:
+    description: "Create or update a chatbot snapshot on CSML Studio. Uses the tag as its name."
+    required: false
+  delete-snapshot:
+    description: "Delete an existing snapshot with the current tag name"
+    required: false
 runs:
   using: "node12"
   main: "index.js"
-inputs:
-  build:
-    description: "Trigger or not the build of a bot via CSML studio client api"
-    required: false
-  save:
-    description: "Trigger or not the update of a bot via CSML studio client api"
-    required: false
-  create_label:
-    description: "Trigger or not the creation of a labeled version of a bot via CSML studio client api"
-    required: false
-  delete_label:
-    description: "Trigger or not the deletion of a labeled version of a bot via CSML studio client api"
-    required: false

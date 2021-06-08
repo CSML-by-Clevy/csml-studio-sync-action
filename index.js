@@ -2,23 +2,33 @@ const core = require('@actions/core');
 const github = require('@actions/github');
 const { BotsService } = require('./bots.service');
 
+const {
+  INPUT_UPDATE,
+  INPUT_BUILD,
+  INPUT_CREATE_SNAPSHOT,
+  INPUT_DELETE_SNAPSHOT,
+} = process.env;
+
 (async () => {
   try {
     const payload = github.context.payload;
-    if (payload) console.log('this is the payload: ', payload);
-    else console.log('no payload, github context: ', github.context);
-    if (process.env.INPUT_SAVE) await BotsService.saveBot();
-    if (process.env.INPUT_BUILD) await BotsService.buildBot();
-    if (process.env.INPUT_CREATE_LABEL) {
+
+    if (INPUT_UPDATE) await BotsService.saveBot();
+
+    if (INPUT_BUILD) await BotsService.buildBot();
+
+    if (INPUT_CREATE_SNAPSHOT) {
       const payload = github.context.payload;
-      const label_name = payload.ref.replace('refs/tags/', '');
-      await BotsService.createLabel(label_name);
+      const snapshotName = payload.ref.replace('refs/tags/', '');
+      await BotsService.createSnapshot(snapshotName);
     }
-    if (process.env.INPUT_DELETE_LABEL) {
+
+    if (INPUT_DELETE_SNAPSHOT) {
       const payload = github.context.payload;
-      const label_name = payload.ref.replace('refs/tags/', '');
-      await BotsService.deleteLabel(label_name);
+      const snapshotName = payload.ref.replace('refs/tags/', '');
+      await BotsService.deleteSnapshot(snapshotName);
     }
+
   }
   catch (err) {
     core.setFailed(err.message);
